@@ -282,7 +282,7 @@ public class ClienteView extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int ultimo = allClients.size();
-				System.out.println(--ultimo);
+				--ultimo;
 				int index = Integer.parseInt(txtIndex.getText());
 				if(index==ultimo){
 					JOptionPane.showMessageDialog(null, "Você já esta no ultimo registro");
@@ -297,7 +297,7 @@ public class ClienteView extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int ultimo = allClients.size();
-				System.out.println(--ultimo);
+				--ultimo;
 				if(Integer.parseInt(txtIndex.getText())==ultimo){
 					JOptionPane.showMessageDialog(null, "Você já esta no ultimo registro");
 				}				
