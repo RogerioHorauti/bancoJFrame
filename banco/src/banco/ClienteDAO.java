@@ -7,95 +7,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 //acesso a base de dados
 public class ClienteDAO {
 
-	static Connection conn;
-	static ClienteDAO dao;
-	static ResultSet rs;
-	static PreparedStatement stm;
+	private static Connection conn;
+	private static ResultSet rs;
+	private static PreparedStatement stm;
 
-	public List<Cliente> primeiro() {
-
-		List<Cliente> clientes = new ArrayList<Cliente>();
-
+	public List<Cliente> all() {
 		// Abri a conexao com o banco
 		conn = ConexaoMySql.getConnection();
 		// Responsavel por executar a query
-
-		try {
-			// Criacao da query
-			stm = conn
-					.prepareStatement("Select idcliente, nome, rg, cpf, dataConta from clientes");
-			// Execucao da query e armazenamento do resultado
-			rs = stm.executeQuery();
-			// Primeiro
-			rs.first();
-			// Criando objetos cliente
-			Cliente cli = new Cliente();
-			cli.setIdCliente(rs.getInt("idcliente"));
-			cli.setNome(rs.getString("nome"));
-			cli.setRg(rs.getString("rg"));
-			cli.setCpf(rs.getString("cpf"));
-			cli.setDataConta(rs.getDate("dataConta"));
-			// adicionando na lista de retorno
-			clientes.add(cli);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		// retornei a lista
-		return clientes;
-	}
-
-	public List<Cliente> ultimo() {
-
 		List<Cliente> clientes = new ArrayList<Cliente>();
-
-		// Abri a conexao com o banco
-		conn = ConexaoMySql.getConnection();
-		// Responsavel por executar a query
-
 		try {
-			// Criacao da query
 			stm = conn.prepareStatement("Select idcliente, nome, rg, cpf, dataConta from clientes");
 			// Execucao da query e armazenamento do resultado
 			rs = stm.executeQuery();
-			// Ultimo
-			rs.last();
-			// Criando objetos cliente
-			Cliente cli = new Cliente();
-			cli.setIdCliente(rs.getInt("idcliente"));
-			cli.setNome(rs.getString("nome"));
-			cli.setRg(rs.getString("rg"));
-			cli.setCpf(rs.getString("cpf"));
-			cli.setDataConta(rs.getDate("dataConta"));
-			// adicionando na lista de retorno
-			clientes.add(cli);
-
-		} catch (SQLException e) {
-			System.out.println("Erro ao mostrar dados\nErro : " + e);
-		}
-		// retornei a lista
-		return clientes;
-	}
-
-	public List<Cliente> anterior() {
-		// Abri a conexao com o banco
-		//conn = ConexaoMySql.getConnection();
-		// Responsavel por executar a query
-
-		List<Cliente> clientes = new ArrayList<Cliente>();
-
-		try {
-			// Criacao da query
-			//stm = conn.prepareStatement("Select idcliente, nome, rg, cpf, dataConta from clientes");
-			// Execucao da query e armazenamento do resultado
-			//rs = stm.executeQuery();
-
-				rs.previous();
+				while(rs.next()){
 				// Criando objetos cliente
 				Cliente cli = new Cliente();
 				cli.setIdCliente(rs.getInt("idcliente"));
@@ -104,54 +32,18 @@ public class ClienteDAO {
 				cli.setCpf(rs.getString("cpf"));
 				cli.setDataConta(rs.getDate("dataConta"));
 				// adicionando na lista de retorno
-				clientes.add(cli);
-			
+				clientes.add(cli);	
+				}
 		} catch (SQLException e) {
-			//System.out.println("Erro ao mostrar dados\nErro : " + e);
-			JOptionPane.showMessageDialog(null, "Fim do registro");
+			System.out.println("Erro ao listar todos os clientes\nErro : " + e);	
 		}
-		// retornei a lista
 		return clientes;
 	}
 
-	public List<Cliente> proximo() {
-		// Abri a conexao com o banco
-		//conn = ConexaoMySql.getConnection();
-		// Responsavel por executar a query
-		List<Cliente> clientes = new ArrayList<Cliente>();
-
-		try {
-			//stm = conn.prepareStatement("Select idcliente, nome, rg, cpf, dataConta from clientes");
-			// Execucao da query e armazenamento do resultado
-			//rs = stm.executeQuery();
-				rs.next();
-				// Criando objetos cliente
-				Cliente cli = new Cliente();
-				cli.setIdCliente(rs.getInt("idcliente"));
-				cli.setNome(rs.getString("nome"));
-				cli.setRg(rs.getString("rg"));
-				cli.setCpf(rs.getString("cpf"));
-				cli.setDataConta(rs.getDate("dataConta"));
-				// adicionando na lista de retorno
-				clientes.add(cli);
-			
-		} catch (SQLException e) {
-			//System.out.println("Erro ao mostrar dados\nErro : " + e);
-			JOptionPane.showMessageDialog(null, "Fim do registro");
-		}
-		// retornei a lista
-		return clientes;
-	}
-
-	
-	// Adiciona
 	public boolean adicionaCliente(Cliente cliente) {
-		// Nenhum insert foi realizado
 		boolean retorno = false;
-
-		// Abri a conexao com o banco
+	// Abri a conexao com o banco
 		conn = ConexaoMySql.getConnection();
-
 		try {
 			// Criacao da query
 			stm = conn.prepareStatement("Insert into clientes(nome, rg, cpf, dataConta) values (?,?,?,?)");
@@ -163,9 +55,8 @@ public class ClienteDAO {
 				retorno = true;
 			}
 			conn.close();
-
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("Erro ao adicionar cliente\nErro : " + e);
 		}
 		return retorno;
 	}
@@ -173,10 +64,8 @@ public class ClienteDAO {
 	// Alualiza
 	public boolean atualizaCliente(Cliente cliente) {
 		boolean retorno = false;
-
 		// Abri a conexao com o banco
 		conn = ConexaoMySql.getConnection();
-
 		try {
 			// Criacao da query
 			stm = conn.prepareStatement("Update clientes Set nome=?, rg=?, cpf=?, dataConta=? Where idcliente=?");
@@ -189,9 +78,8 @@ public class ClienteDAO {
 				retorno = true;
 			}
 			conn.close();
-
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("Erro ao atualizar cliente\nErro : " + e);
 		}
 		return retorno;
 	}
@@ -201,7 +89,6 @@ public class ClienteDAO {
 		boolean retorno = false;
 		// Abri a conexao com o banco
 		conn = ConexaoMySql.getConnection();
-
 		try {
 			// Criacao da query
 			stm = conn.prepareStatement("Delete from clientes Where idcliente=?");
@@ -210,49 +97,10 @@ public class ClienteDAO {
 				retorno = true;
 			}
 			conn.close();
-
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("Erro ao excluir cliente\nErro : " + e);
 		}
 		return retorno;
 	}
 
-	public static void main(String[] args) throws SQLException {
-		
-		conn = ConexaoMySql.getConnection();
-		stm = conn.prepareStatement("Select idcliente, nome, rg, cpf, dataConta from clientes");
-		// Execucao da query e armazenamento do resultado
-		rs = stm.executeQuery();
-		
-		/*
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		dao = new ClienteDAO();
-
-		// Visualizar os clientes cadastrados
-		for (Cliente cli : dao.proximo()) {
-			System.out.println("id: " + cli.getIdCliente() + " - Nome: "
-					+ cli.getNome() + " - CPF: " + cli.getCpf() + " - RG: "
-					+ cli.getRg() + " - Data Conta: "
-					+ sdf.format(cli.getDataConta()));
-		}
-		for (Cliente cli : dao.proximo()) {
-			System.out.println("id: " + cli.getIdCliente() + " - Nome: "
-					+ cli.getNome() + " - CPF: " + cli.getCpf() + " - RG: "
-					+ cli.getRg() + " - Data Conta: "
-					+ sdf.format(cli.getDataConta()));
-		}
-		for (Cliente cli : dao.primeiro()) {
-			System.out.println("id: " + cli.getIdCliente() + " - Nome: "
-					+ cli.getNome() + " - CPF: " + cli.getCpf() + " - RG: "
-					+ cli.getRg() + " - Data Conta: "
-					+ sdf.format(cli.getDataConta()));
-		}
-		for (Cliente cli : dao.ultimo()) {
-			System.out.println("id: " + cli.getIdCliente() + " - Nome: "
-					+ cli.getNome() + " - CPF: " + cli.getCpf() + " - RG: "
-					+ cli.getRg() + " - Data Conta: "
-					+ sdf.format(cli.getDataConta()));
-		}
-		*/
-	}
 }

@@ -3,7 +3,7 @@ import java.sql.*;
 
 public class ConexaoMySql {
 	
-	public static String status = "N�o conectou...";
+	public static String status = "";
 	
 	static Connection conn;
 	
@@ -35,9 +35,7 @@ public class ConexaoMySql {
             	System.out.println("STATUS--->Conectado com sucesso!"); 
             } else { 
             	System.out.println("STATUS--->Nao foi possivel realizar conexao"); 
-            } 
-
-           
+            }           
             
         } catch (ClassNotFoundException e) {
         	status = ("O driver expecificado nao foi encontrado.");

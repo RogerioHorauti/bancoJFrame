@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -18,9 +20,36 @@ public class ClienteView extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private JLabel lblId;
+	private JButton btnNovo;
+	private JButton btnAtualizar;
+	private JButton btnAnterior;
+	private JButton btnProximo;
+	private JButton btnUltimo;
+	private JLabel lblNome;
+	private JLabel lblRg;
+	private JLabel lblCPF;
+	private JLabel lblDataConta;
+	private static JTextField txtIndex;
+	private static JTextField txtId;
+	private static JTextField txtNome;
+	private static JTextField txtRg;
+	private static JTextField txtCpf;
+	private static JTextField txtDataConta;
+	private JButton btnSalvar;
+	private JButton btnPrimeiro;
+	private JButton btnApagar;
+	private static Cliente cliente;
+	private static ClienteDAO dao;
+	private static SimpleDateFormat formData = new SimpleDateFormat("dd/mm/yyyy");
+	private static List<Cliente> allClients = new ArrayList<Cliente>();
+	
 	public ClienteView() throws ParseException {
 		initComponents();
-		initListeners();		
+		initListeners();	
+		dao = new ClienteDAO();
+		allClients = dao.all();
+		System.out.println(allClients);
 	}
 	
 	private void initComponents() {
@@ -38,6 +67,7 @@ public class ClienteView extends JFrame {
 		lblRg = new JLabel("RG");
 		lblDataConta = new JLabel("Data da Conta");
 		//Campo texto
+		txtIndex = new JTextField();
 		txtId = new JTextField();
 		txtNome = new JTextField();
 		txtCpf = new JFormattedTextField();
@@ -87,6 +117,9 @@ public class ClienteView extends JFrame {
 	
 		//move e redimensiona componestes (eixo x, eixo y, largura, altura);
 		//Campo texto
+		txtIndex.setBounds(160, 10, 40, 20);
+		add(txtIndex);
+		txtIndex.setEnabled(false);
 		txtId.setBounds(110, 10, 40, 20);
 		add(txtId);
 		txtId.setEnabled(false);
@@ -99,25 +132,19 @@ public class ClienteView extends JFrame {
 		txtDataConta.setBounds(110, 130, 75, 20);
 		add(txtDataConta);
 		
-	}
+	}// private void initComponents()
 	
-	private static void primeiro(){
-		dao = new ClienteDAO();
-		//Visualizar os clientes cadastrados
-		for(Cliente cli : dao.primeiro()) {
-			
-			int id = cli.getIdCliente();  
-			String str = String.valueOf(id);  
-			txtId.setText(str);
-			
-			txtNome.setText(cli.getNome());
-			txtRg.setText(cli.getCpf());
-			txtCpf.setText(cli.getRg());
-			txtDataConta.setText(formData.format(cli.getDataConta()));
-		}
-	}
+	private static void carregarCampos(Cliente cliente,int index){
+		txtIndex.setText(Integer.toString(index));
+		txtId.setText(Integer.toString(cliente.getIdCliente()));		
+		txtNome.setText(cliente.getNome());
+		txtRg.setText(cliente.getCpf());
+		txtCpf.setText(cliente.getRg());
+		txtDataConta.setText(formData.format(cliente.getDataConta()));	
+	}// private static void primeiro()
 	
 	private void limpar(){
+		txtIndex.setText("");
 		txtId.setText("");
 		txtNome.setText("");
 		txtRg.setText("");
@@ -137,10 +164,6 @@ public class ClienteView extends JFrame {
 		btnProximo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/banco/imagem/nexr.png"))); 
 		btnUltimo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/banco/imagem/last.png")));
 		
-		//((JFormattedTextField) txtCpf).setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###.##")));
-	    
-		//((JFormattedTextField) txtRg).setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##.###.###-#")));
-		
 		((JFormattedTextField) txtDataConta).setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
 		
 		btnNovo.addActionListener(new ActionListener() {			
@@ -159,8 +182,7 @@ public class ClienteView extends JFrame {
 				//Pegar os valores dos campos tipo String
 				cliente.setNome(txtNome.getText());
 				cliente.setRg(txtRg.getText());
-				cliente.setCpf(txtCpf.getText());
-				
+				cliente.setCpf(txtCpf.getText());	
 				Date recebeFormData = null;
 				try {
 					recebeFormData = new Date( formData.parse(txtDataConta.getText()).getTime() )  ;
@@ -214,15 +236,17 @@ public class ClienteView extends JFrame {
 		btnApagar.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dao = new ClienteDAO();
-				//if(txtId.getText()== ""){// Enviar um int
-					if(dao.apagaCliente(Integer.parseInt(txtId.getText())))
-						JOptionPane.showMessageDialog(null, "Excluido");
-						limpar();
-				//}else{
-					//JOptionPane.showMessageDialog(null, "Nenhum registro encontrado");
-					//System.out.println("nulo");
-				//}
+				
+				if("".equals(txtId.getText())){// Enviar um int
+					JOptionPane.showMessageDialog(null, "Nenhum registro encontrado");
+					System.out.println("Nenhum registro encontrado.");
+
+				}else{
+					dao = new ClienteDAO();
+//					if(dao.apagaCliente(Integer.parseInt(txtId.getText())))
+//					JOptionPane.showMessageDialog(null, "Excluido");
+//					limpar();
+				}
 				
 			}
 		});
@@ -232,8 +256,11 @@ public class ClienteView extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {	
-				//primeiro
-				primeiro();
+				if(Integer.parseInt(txtIndex.getText())==0){
+					JOptionPane.showMessageDialog(null, "Você já esta no primeiro registro");;
+				}else{
+					carregarCampos(allClients.get(0),0);
+				}
 			}
 		});
 		
@@ -241,21 +268,12 @@ public class ClienteView extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-								
-				dao = new ClienteDAO();			
-				//Visualizar os clientes cadastrados
-				for(Cliente cli : dao.anterior()) {
-					
-					int id = cli.getIdCliente();  
-					String str = String.valueOf(id);  
-					txtId.setText(str);
-					
-					txtNome.setText(cli.getNome());
-					txtRg.setText(cli.getCpf());
-					txtCpf.setText(cli.getRg());
-					txtDataConta.setText(formData.format(cli.getDataConta()));
+				int index = Integer.parseInt(txtIndex.getText());
+				if(index==0){
+					JOptionPane.showMessageDialog(null, "Você já esta no primeiro registro");
+				}else{
+					carregarCampos(allClients.get(--index), index);
 				}
-	
 			}
 		});
 		
@@ -263,21 +281,14 @@ public class ClienteView extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				dao = new ClienteDAO();				
-				//Visualizar os clientes cadastrados
-				for(Cliente cli : dao.proximo()) {
-					
-					int id = cli.getIdCliente();  
-					String str = String.valueOf(id);  
-					txtId.setText(str);
-					
-					txtNome.setText(cli.getNome());
-					txtRg.setText(cli.getCpf());
-					txtCpf.setText(cli.getRg());
-					txtDataConta.setText(formData.format(cli.getDataConta()));
+				int ultimo = allClients.size();
+				System.out.println(--ultimo);
+				int index = Integer.parseInt(txtIndex.getText());
+				if(index==ultimo){
+					JOptionPane.showMessageDialog(null, "Você já esta no ultimo registro");
+				}else{
+					carregarCampos(allClients.get(++index), index);
 				}
-	
 			}
 		});
 		
@@ -285,50 +296,23 @@ public class ClienteView extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-				dao = new ClienteDAO();		
-				//Visualizar os clientes cadastrados
-				for(Cliente cli : dao.ultimo()) {
-					
-					int id = cli.getIdCliente();  
-					String str = String.valueOf(id);  
-					txtId.setText(str);
-					
-					txtNome.setText(cli.getNome());
-					txtRg.setText(cli.getCpf());
-					txtCpf.setText(cli.getRg());
-					txtDataConta.setText(formData.format(cli.getDataConta()));
-				}
+				int ultimo = allClients.size();
+				System.out.println(--ultimo);
+				if(Integer.parseInt(txtIndex.getText())==ultimo){
+					JOptionPane.showMessageDialog(null, "Você já esta no ultimo registro");
+				}				
+				else{
+					carregarCampos(allClients.get(ultimo),ultimo);
+				}		
 			}
 		});
-	}
+		
+	}// private void initListeners()
 
 	public static void main(String[] args) throws ParseException {
 		
 		new ClienteView().setVisible(true);	
-		primeiro();
+		carregarCampos(allClients.get(0),0);
 	}
-	
-	private JLabel lblId;
-	private JButton btnNovo;
-	private JButton btnAtualizar;
-	private JButton btnAnterior;
-	private JButton btnProximo;
-	private JButton btnUltimo;
-	private JLabel lblNome;
-	private JLabel lblRg;
-	private JLabel lblCPF;
-	private JLabel lblDataConta;
-	private static JTextField txtId;
-	private static JTextField txtNome;
-	private static JTextField txtRg;
-	private static JTextField txtCpf;
-	private static JTextField txtDataConta;
-	private JButton btnSalvar;
-	private JButton btnPrimeiro;
-	private JButton btnApagar;
-	private Cliente cliente;
-	private static ClienteDAO dao;
-	private static SimpleDateFormat formData = new SimpleDateFormat("dd/mm/yyyy");
 	
 }
