@@ -1,5 +1,9 @@
 package banco;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 
 public class ConexaoMySql {
 	
@@ -10,16 +14,13 @@ public class ConexaoMySql {
 	//Metodo que retorna a conexao = cnn
     public static Connection getConnection() {
     
-        String driver = "com.mysql.jdbc.Driver";//Driver de conexao
-        String serverName = "localhost";//Servidor
-        String mydatabase = "cliente";  //Base de dados
-        String url = "jdbc:mysql://" + serverName + "/" + mydatabase;
+        String url = "jdbc:mysql://localhost/cliente";
         String usuario = "root";
         String senha = "root";
 
         try {
             //Carrega o driver
-        	Class.forName(driver);
+        	Class.forName("com.mysql.jdbc.Driver");//Driver de conexao
         	//Abrir uma nova conexao
             conn = DriverManager.getConnection(
                                     //Host
@@ -37,14 +38,16 @@ public class ConexaoMySql {
             	System.out.println("STATUS--->Nao foi possivel realizar conexao"); 
             }           
             
+        } catch (SQLTimeoutException e){
+        	e.printStackTrace();
+        	
         } catch (ClassNotFoundException e) {
         	status = ("O driver expecificado nao foi encontrado.");
-            //e.printStackTrace();
-                
+            //e.printStackTrace();         
         } catch (SQLException e) {
         	status = ("Nao foi possivel conectar ao Banco de Dados.");
             //e.printStackTrace();
-        }
+        } 
         return conn;
     }
     

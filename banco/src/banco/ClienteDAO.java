@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 //acesso a base de dados
-public class ClienteDAO {
+public class ClienteDAO implements GenericDao<Cliente>{
 
 	private static Connection conn;
 	private static ResultSet rs;
 	private static PreparedStatement stm;
-
+	
+	@Override
 	public List<Cliente> all() {
 		// Abri a conexao com o banco
 		conn = ConexaoMySql.getConnection();
@@ -40,9 +41,10 @@ public class ClienteDAO {
 		return clientes;
 	}
 
-	public boolean adicionaCliente(Cliente cliente) {
+	@Override
+	public boolean insert(Cliente cliente) {
 		boolean retorno = false;
-	// Abri a conexao com o banco
+		// Abri a conexao com o banco
 		conn = ConexaoMySql.getConnection();
 		try {
 			// Criacao da query
@@ -61,8 +63,8 @@ public class ClienteDAO {
 		return retorno;
 	}
 
-	// Alualiza
-	public boolean atualizaCliente(Cliente cliente) {
+	@Override
+	public boolean update(Cliente cliente) {
 		boolean retorno = false;
 		// Abri a conexao com o banco
 		conn = ConexaoMySql.getConnection();
@@ -84,8 +86,8 @@ public class ClienteDAO {
 		return retorno;
 	}
 
-	// Apaga
-	public boolean apagaCliente(int id) {
+	@Override
+	public boolean delete(int id) {
 		boolean retorno = false;
 		// Abri a conexao com o banco
 		conn = ConexaoMySql.getConnection();

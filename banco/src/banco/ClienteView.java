@@ -30,19 +30,19 @@ public class ClienteView extends JFrame {
 	private JLabel lblRg;
 	private JLabel lblCPF;
 	private JLabel lblDataConta;
-	private static JTextField txtIndex;
-	private static JTextField txtId;
-	private static JTextField txtNome;
-	private static JTextField txtRg;
-	private static JTextField txtCpf;
-	private static JTextField txtDataConta;
+	private JTextField txtIndex;
+	private JTextField txtId;
+	private JTextField txtNome;
+	private JTextField txtRg;
+	private JTextField txtCpf;
+	private JTextField txtDataConta;
 	private JButton btnSalvar;
 	private JButton btnPrimeiro;
 	private JButton btnApagar;
-	private static Cliente cliente;
-	private static ClienteDAO dao;
-	private static SimpleDateFormat formData = new SimpleDateFormat("dd/mm/yyyy");
-	private static List<Cliente> allClients = new ArrayList<Cliente>();
+	private Cliente cliente;
+	private ClienteDAO dao;
+	private SimpleDateFormat formData = new SimpleDateFormat("dd/mm/yyyy");
+	private List<Cliente> allClients = new ArrayList<Cliente>();
 	
 	public ClienteView() throws ParseException {
 		initComponents();
@@ -50,6 +50,7 @@ public class ClienteView extends JFrame {
 		dao = new ClienteDAO();
 		allClients = dao.all();
 		System.out.println(allClients);
+		carregarCampos(allClients.get(0),0);
 	}
 	
 	private void initComponents() {
@@ -134,7 +135,7 @@ public class ClienteView extends JFrame {
 		
 	}// private void initComponents()
 	
-	private static void carregarCampos(Cliente cliente,int index){
+	private void carregarCampos(Cliente cliente,int index){
 		txtIndex.setText(Integer.toString(index));
 		txtId.setText(Integer.toString(cliente.getIdCliente()));		
 		txtNome.setText(cliente.getNome());
@@ -195,7 +196,7 @@ public class ClienteView extends JFrame {
 				cliente.setDataConta(recebeFormData);
 				dao = new ClienteDAO();
 				//Adiciona no banco de dados
-				if(dao.adicionaCliente(cliente)) {
+				if(dao.insert(cliente)) {
 					JOptionPane.showMessageDialog(null, "Adicionado");
 					limpar();
 				}
@@ -219,14 +220,13 @@ public class ClienteView extends JFrame {
 				try {
 					recebeFormData = new Date( formData.parse(txtDataConta.getText()).getTime() )  ;
 				} catch (ParseException i) {
-					// TODO Auto-generated catch block
 					i.printStackTrace();
 				}
 				
 				//Armazena na classe Cliente
 				cliente.setDataConta(recebeFormData);
 				dao = new ClienteDAO();
-				if(dao.atualizaCliente(cliente)){
+				if(dao.update(cliente)){
 					JOptionPane.showMessageDialog(null, "Atualizado");
 				}
 			}
@@ -312,7 +312,7 @@ public class ClienteView extends JFrame {
 	public static void main(String[] args) throws ParseException {
 		
 		new ClienteView().setVisible(true);	
-		carregarCampos(allClients.get(0),0);
+		
 	}
 	
 }
